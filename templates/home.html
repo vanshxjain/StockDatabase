@@ -1,0 +1,107 @@
+{%  extends 'layout.html' %}
+
+{%block content%}
+
+<script type="text/javascript">
+	$(document).ready(function() {
+		$('#add_stocks').click(function(){
+			$('.ui.modal').modal('show');
+		})
+		$('#save').click(function(){
+			var symbols = $('#symbolsToAdd').val();
+
+			console.log(symbols);
+
+			var stockSymbols = symbols.split(',');
+
+			console.log(stockSymbols);
+
+			for ( var i = 0; i < stockSymbols.length; ++i) {
+				console.log(stockSymbols[i]);
+
+				$.ajax({
+					url: '/stock',
+					type: 'POST',
+					contentType: 'application/json',
+					data: JSON.stringify({'symbol': stockSymbols[i]}),
+					datatype: 'json'
+				})
+			}
+			$('.ui.modal').modal('hide');
+		})
+	});
+</script>
+
+<form>
+<div class="ui input">
+  <input name = 'forward_pe'  type="text" placeholder="P/E ratio" value = "{{ forward_pe or '' }}">
+</div>
+
+<div class="ui input">
+  <input name = 'dividend_yield (%)' type="text" placeholder="Dividend Yield" value="{{ dividend_yield or '' }}">
+</div>
+
+<div class="ui checkbox">
+  <input name = 'ma50' type="checkbox" {% if ma50%}checked = 'checked'{%endif%}>
+  <label>Above 50 day MA</label>
+</div>
+
+<div class="ui checkbox">
+  <input name = 'ma200' type="checkbox" {% if ma200%}checked = 'checked'{%endif%}>
+  <label>Above 200 Day MA</label>
+</div>
+
+<button class="ui button green" tabindex="0">Filter</button>
+</form>
+<button id = 'add_stocks'class="ui animated button primary" tabindex="0">
+  <div class="visible content">Add Stocks</div>
+  <div class="hidden content">
+    <i class="plus icon"></i>
+  </div>
+</button>
+
+<table class="ui celled table">
+  <thead>
+    <tr>
+    	<th>Symbol</th>
+    	<th>Last Price</th>
+    	<th>P/E</th>
+    	<th>Div Yield</th>
+    	<th>EPS</th>
+    	<th>50 Day MA</th>
+    	<th>200 Day MA</th>
+  </tr></thead>
+  <tbody>
+    	{% for stock in stocks %}
+    <tr>
+      <td>{{ stock.symbol }}</td>
+      <td>{{ stock.price }}</td>
+      <td>{{ stock.forward_pe }}</td>
+      <td>{{ stock.dividend_yield }}</td>
+      <td>{{ stock.forward_eps }}</td>
+      <td>{{ stock.ma50 }}</td>
+      <td>{{ stock.ma200 }}</td>
+    </tr>
+    {%endfor%}
+  </tbody>
+</table>
+
+<div class="ui modal">
+	<i class="close icon"></i>
+	<div class="header">Enter Stock Symbol</div>
+	<div class="content">
+		<div class="ui form">
+			<div class="field">
+				<label>Add Comma Separated list of symbols (AAPL, BRK-B, etc.)</label>
+				<textarea id = 'symbolsToAdd'></textarea>
+			</div>
+		</div>
+	</div>
+	<div class="actions">
+		<div id = 'save' class="ui positive right labeled icon button">
+			Add Symbols
+			<i class="plus icon"></i>
+		</div>
+	</div>
+</div>
+{%endblock%}
