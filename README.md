@@ -36,4 +36,4 @@ Open up you favorite browser and navigate to **localhost:8000**
 
 ## Result
 
-![Example](/Example_Result.png)
+![Example](/Example.png)
